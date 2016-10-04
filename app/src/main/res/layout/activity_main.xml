@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:squint="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#eeffffff"
+    tools:context="com.intrusoft.diagonalApp.MainActivity">
+
+    <com.intrusoft.squint.DiagonalView
+        android:id="@+id/diagonal"
+        android:layout_width="match_parent"
+        android:layout_height="350dp"
+        squint:angle="15"
+        squint:gravity="left"
+        squint:scaleType="centerCrop"
+        squint:src="@drawable/barney_cover" />
+
+    <TextView
+        android:id="@+id/name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/diagonal"
+        android:fontFamily="sans-serif-smallcaps"
+        android:gravity="end"
+        android:paddingRight="16dp"
+        android:text="Neil Patrick Harris"
+        android:textColor="#626262"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/diagonal"
+        android:layout_marginBottom="24dp"
+        android:fontFamily="sans-serif-smallcaps"
+        android:gravity="end"
+        android:paddingRight="16dp"
+        android:text="Actor"
+        android:textColor="#828282"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/diagonal"
+        android:padding="16dp"
+        android:textSize="16sp"
+        android:fontFamily="sans-serif-smallcaps"
+        android:textColor="#828282"
+        android:gravity="center"
+        android:text="Harris was born in Albuquerque, New Mexico and grew up Ruidoso, New Mexico, with his elder brother and their parents, Sheila Gai and Ronald Gene Harris. His parents were lawyers and also ran a restaurant. He attended La Cueva High School in Albuquerque, graduating with high honors in 1991."/>
+
+
+</RelativeLayout>
