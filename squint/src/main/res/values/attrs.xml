@@ -1,16 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <attr name="src" format="reference" />
+    <attr name="angle" format="float" />
+    <attr name="scaleType">
+        <enum name="centerCrop" value="0" />
+        <enum name="fitXY" value="1" />
+    </attr>
+    <attr name="gravity">
+        <enum name="left" value="0" />
+        <enum name="right" value="1" />
+    </attr>
+    <attr name="tint" format="color" />
+
     <declare-styleable name="DiagonalView">
-        <attr name="src" format="reference" />
-        <attr name="angle" format="float" />
-        <attr name="scaleType">
-            <enum name="centerCrop" value="0" />
-            <enum name="fitXY" value="1" />
-        </attr>
-        <attr name="gravity">
-            <enum name="left" value="0" />
-            <enum name="right" value="1" />
-        </attr>
-        <attr name="tint" format="color" />
+        <attr name="src" />
+        <attr name="angle" />
+        <attr name="scaleType" />
+        <attr name="gravity" />
+        <attr name="tint" />
     </declare-styleable>
 </resources>
