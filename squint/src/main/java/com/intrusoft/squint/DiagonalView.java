@@ -96,7 +96,7 @@ public class DiagonalView extends View {
                 int scale = typedArray.getInt(R.styleable.DiagonalView_scaleType, 0);
                 scaleType = scaleTypeArray[scale];
                 colorTint = typedArray.getColor(R.styleable.DiagonalView_tint, 0);
-                solidColor = typedArray.getColor(R.styleable.DiagonalView_solid_color, 0);
+                solidColor = typedArray.getColor(R.styleable.DiagonalView_solidColor, 0);
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {
@@ -180,6 +180,10 @@ public class DiagonalView extends View {
         viewBounds.set(0, 0, width, height);
         canvas.clipPath(path);
         canvas.clipRect(viewBounds);
+        if(solidColor !=0) {
+            paint.setColor(solidColor);
+            canvas.drawRect(viewBounds, paint);
+        }
         if (bitmap != null)
             if (scaleType == ScaleType.CENTRE_CROP) {
                 scaleRect.set(x, y, x + requiredWidth, y + requiredHeight);
@@ -190,10 +194,6 @@ public class DiagonalView extends View {
             }
         if (colorTint != 0)
             canvas.drawRect(viewBounds, paint);
-        if(solidColor !=0) {
-            paint.setColor(solidColor);
-            canvas.drawRect(viewBounds, paint);
-        }
         // Log.d("LOG", "Drawing Canvas");
     }
 

@@ -30,6 +30,7 @@ dependencies {
         squint:angle="15"
         squint:gravity="left"
         squint:scaleType="centerCrop"
+        squint:solidColor="@color/solid_color"
         squint:src="@drawable/barney_cover" />
 ```
 ###Attributes
@@ -55,6 +56,10 @@ squint:src="@drawable/your_image"
 ```xml
 squint:tint="@color/your_color"
 ```
+####To make solid color Diagonal
+```xml
+squint:solidColor="@color/your_color"
+```
 ###Java Implementation:
 ```java
 DiagonalView diagonalView = (DiagonalView) findViewById(R.id.diagonal);
@@ -73,6 +78,9 @@ diagonalView.setGravity(DiagonalView.Gravity.LEFT);
 
 // to set the background color (color should have some alpha val)
 diagonalView.setColorTint(Color.GREEN);
+
+// to make the solid color diagonal
+diagonalView.setSolidColor(Color.BLUE);
 ```
 #Licence
 ```

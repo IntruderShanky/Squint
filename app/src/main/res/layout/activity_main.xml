@@ -14,7 +14,7 @@
         android:layout_height="350dp"
         squint:angle="15"
         squint:gravity="left"
-        squint:solid_color="@color/colorPrimary"
+        squint:solidColor="@color/colorPrimary"
         squint:scaleType="centerCrop"
         squint:src="@drawable/barney_cover" />
 

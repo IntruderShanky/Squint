@@ -1,6 +1,7 @@
 package com.intrusoft.diagonalApp;
 
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
