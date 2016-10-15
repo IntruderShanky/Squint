@@ -44,6 +44,7 @@ public class DiagonalView extends View {
     private Bitmap bitmap;
     private Context context;
     private final String LOG_TAG = "SQUINT_LOG";
+    private int solidColor;
 
     public enum ScaleType {
         CENTRE_CROP(0),
@@ -95,6 +96,7 @@ public class DiagonalView extends View {
                 int scale = typedArray.getInt(R.styleable.DiagonalView_scaleType, 0);
                 scaleType = scaleTypeArray[scale];
                 colorTint = typedArray.getColor(R.styleable.DiagonalView_tint, 0);
+                solidColor = typedArray.getColor(R.styleable.DiagonalView_solid_color, 0);
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {
@@ -124,6 +126,9 @@ public class DiagonalView extends View {
             if (Color.alpha(colorTint) == 255)
                 colorTint = Color.argb(55, Color.red(colorTint), Color.green(colorTint), Color.blue(colorTint));
             paint.setColor(colorTint);
+        }
+        if (solidColor != 0) {
+            solidColor = Color.rgb(Color.red(solidColor), Color.green(solidColor), Color.blue(solidColor));
         }
     }
 
@@ -185,6 +190,10 @@ public class DiagonalView extends View {
             }
         if (colorTint != 0)
             canvas.drawRect(viewBounds, paint);
+        if(solidColor !=0) {
+            paint.setColor(solidColor);
+            canvas.drawRect(viewBounds, paint);
+        }
         // Log.d("LOG", "Drawing Canvas");
     }
 
@@ -235,10 +244,8 @@ public class DiagonalView extends View {
      * @param color is image tint to provide theme effect. This is optional.
      */
     public void setColorTint(@ColorInt int color) {
-        this.colorTint = color;
-        if (colorTint != 0) {
-            if (Color.alpha(colorTint) == 255)
-                colorTint = Color.argb(55, Color.red(colorTint), Color.green(colorTint), Color.blue(colorTint));
+        if (color != 0 && Color.alpha(color) == 255) {
+            colorTint = Color.argb(55, Color.red(color), Color.green(color), Color.blue(color));
             paint.setColor(colorTint);
         }
         invalidate();
@@ -251,6 +258,17 @@ public class DiagonalView extends View {
      */
     public void setAngle(float angle) {
         this.angle = angle;
+        invalidate();
+    }
+
+    /**
+     * To make diagonal of solid color, alpha of color will automatically removed
+     * @param color is solid color
+     */
+    public void setSolidColor(int color) {
+        if (color != 0) {
+            solidColor = Color.rgb(Color.red(color), Color.green(color), Color.blue(color));
+        }
         invalidate();
     }
 }

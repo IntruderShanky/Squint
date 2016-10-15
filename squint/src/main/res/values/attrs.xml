@@ -11,6 +11,7 @@
         <enum name="right" value="1" />
     </attr>
     <attr name="tint" format="color" />
+    <attr name="solid_color" format="color" />
 
     <declare-styleable name="DiagonalView">
         <attr name="src" />
@@ -18,5 +19,6 @@
         <attr name="scaleType" />
         <attr name="gravity" />
         <attr name="tint" />
+        <attr name="solid_color" />
     </declare-styleable>
 </resources>
