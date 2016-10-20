@@ -1,6 +1,8 @@
 # Squint
 Provide Diagonal cut on view with awesome customization #DiagonalView
 
+[![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-Squint%20--%20A%20Diagonal%20Cut-brightgreen.svg?style=flat)](http://android-arsenal.com/details/1/4458) [![API](https://img.shields.io/badge/API-9%2B-blue.svg?style=flat)](https://android-arsenal.com/api?level=9) [![](https://jitpack.io/v/IntruderShanky/Squint.svg)](https://jitpack.io/#IntruderShanky/Squint)
+
 # Preview
 ![Screenshot](Screenshot/screenshot.png)
 
@@ -17,7 +19,7 @@ allprojects {
 Step 2. Add the dependency
 ```groovy
 dependencies {
-  compile 'com.github.IntruderShanky:Squint:1.0.1'
+  compile 'com.github.IntruderShanky:Squint:2.1.0'
  }
  ```
 # Implementation

@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
@@ -138,28 +139,19 @@ public class DiagonalView extends View {
         width = getMeasuredWidth();
         height = getMeasuredHeight();
         if (bitmap != null && scaleType == ScaleType.CENTRE_CROP) {
-            float ratioChange;
-            if (width - bitmap.getWidth() < height - bitmap.getHeight())
+            float ratioChange = 1;
+            if (width != bitmap.getWidth()) {
+                ratioChange = width / bitmap.getWidth();
+            }
+            if (ratioChange * bitmap.getHeight() < height) {
                 ratioChange = height / bitmap.getHeight();
-            else ratioChange = width / requiredWidth;
+            }
             requiredHeight = bitmap.getHeight() * ratioChange;
             requiredWidth = bitmap.getWidth() * ratioChange;
-            if (requiredWidth < width) {
-                ratioChange = width / requiredWidth;
-                requiredWidth *= ratioChange;
-                requiredHeight *= ratioChange;
-            }
-            if (requiredHeight < height) {
-                ratioChange = height / requiredHeight;
-                requiredHeight *= ratioChange;
-                requiredWidth *= ratioChange;
-            }
-
             y = (int) ((requiredHeight / 2) - (height / 2));
             x = (int) ((requiredWidth / 2) - (width / 2));
             if (x > 0) x = -x;
             if (y > 0) y = -y;
-            bitmap = Bitmap.createScaledBitmap(bitmap, (int) requiredWidth, (int) requiredHeight, true);
         }
     }
 
@@ -180,7 +172,7 @@ public class DiagonalView extends View {
         viewBounds.set(0, 0, width, height);
         canvas.clipPath(path);
         canvas.clipRect(viewBounds);
-        if(solidColor !=0) {
+        if (solidColor != 0) {
             paint.setColor(solidColor);
             canvas.drawRect(viewBounds, paint);
         }
@@ -263,6 +255,7 @@ public class DiagonalView extends View {
 
     /**
      * To make diagonal of solid color, alpha of color will automatically removed
+     *
      * @param color is solid color
      */
     public void setSolidColor(int color) {

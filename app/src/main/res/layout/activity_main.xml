@@ -12,11 +12,10 @@
         android:id="@+id/diagonal"
         android:layout_width="match_parent"
         android:layout_height="350dp"
-        squint:angle="15"
+        squint:angle="13"
         squint:gravity="left"
-        squint:solidColor="@color/colorPrimary"
         squint:scaleType="centerCrop"
-        squint:src="@drawable/barney_cover" />
+        squint:src="@drawable/barney_squint" />
 
     <TextView
         android:id="@+id/name"
