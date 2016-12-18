@@ -3,265 +3,282 @@ package com.intrusoft.squint;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.graphics.BitmapShader;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.ColorFilter;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
-import android.graphics.RectF;
-import android.support.annotation.ColorInt;
-import android.support.annotation.DrawableRes;
-import android.support.annotation.NonNull;
+import android.graphics.Shader;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.util.AttributeSet;
-import android.util.Log;
-import android.view.View;
+import android.widget.ImageView;
 
-/**
- * Displays an arbitrary image with diagonal cut.
- * The ImageView class can load images from various sources (such as resources or bitmaps),
- * takes care of computing its measurement from the image so that it can be used in any layout manager,
- * and provides various display options such as scaling and tinting.
- *
- * @author Intruder Shanky
- * @since October 2016
- */
-public class DiagonalView extends View {
+import com.intrusoft.squint.Squint.Direction;
+import com.intrusoft.squint.Squint.Gravity;
 
-    private ScaleType scaleType;
-    private Gravity gravity;
-    private float angle;
+import static android.graphics.Paint.ANTI_ALIAS_FLAG;
+import static com.intrusoft.squint.Squint.DIRECTIONS;
+import static com.intrusoft.squint.Squint.GRAVITIES;
+
+public class DiagonalView extends ImageView {
+
+    private final Bitmap.Config BITMAP_CONFIG = Bitmap.Config.ARGB_8888;
+    private final Paint fillPaint = new Paint(ANTI_ALIAS_FLAG);
+    private final Paint tintPaint = new Paint(ANTI_ALIAS_FLAG);
+    private final Paint bitmapPaint = new Paint(ANTI_ALIAS_FLAG);
+    private final Paint solidPaint = new Paint(ANTI_ALIAS_FLAG);
+    private final Matrix shaderMatrix = new Matrix();
+    private final int DEFAULT_ALPHA = 50;
+    private static int tintColor = Color.TRANSPARENT;
+    private static int fillColor = Color.TRANSPARENT;
+    private static int solidColor = Color.TRANSPARENT;
     private float width;
     private float height;
-    private float requiredWidth;
-    private float requiredHeight;
-    private Path path;
-    private RectF viewBounds, scaleRect;
-    private int colorTint;
-    private int imageSource;
-    private int x;
-    private int y;
-    private Paint paint;
+    private int angle = 10;
+    private Gravity gravity = Gravity.BOTTOM;
+    private Direction direction = Direction.LEFT_TO_RIGHT;
     private Bitmap bitmap;
-    private Context context;
-    private final String LOG_TAG = "SQUINT_LOG";
-    private int solidColor;
+    private BitmapShader bitmapShader;
+    private ColorFilter colorFilter;
 
-    public enum ScaleType {
-        CENTRE_CROP(0),
-        FIT_XY(1);
-        final int value;
-
-        ScaleType(int value) {
-            this.value = value;
-        }
-    }
-
-    private static final ScaleType[] scaleTypeArray = {ScaleType.CENTRE_CROP, ScaleType.FIT_XY};
-
-    public enum Gravity {
-        LEFT(0),
-        RIGHT(1);
-        final int value;
-
-        Gravity(int value) {
-            this.value = value;
-        }
-    }
-
-    private static final Gravity[] gravityArray = {Gravity.LEFT, Gravity.RIGHT};
 
     public DiagonalView(Context context) {
         super(context);
-        init(context, null);
+        init(context, null, 0);
     }
 
     public DiagonalView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        init(context, attrs);
+        init(context, attrs, 0);
     }
 
     public DiagonalView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        init(context, attrs);
+        init(context, attrs, defStyleAttr);
     }
 
-    public void init(Context context, AttributeSet attrs) {
-        if (attrs != null) {
-            TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.DiagonalView);
-            try {
-                imageSource = typedArray.getResourceId(R.styleable.DiagonalView_src, -1);
-                angle = typedArray.getFloat(R.styleable.DiagonalView_angle, 18);
-                int g = typedArray.getInt(R.styleable.DiagonalView_gravity, 0);
-                gravity = gravityArray[g];
-                int scale = typedArray.getInt(R.styleable.DiagonalView_scaleType, 0);
-                scaleType = scaleTypeArray[scale];
-                colorTint = typedArray.getColor(R.styleable.DiagonalView_tint, 0);
-                solidColor = typedArray.getColor(R.styleable.DiagonalView_solidColor, 0);
-            } catch (Exception e) {
-                e.printStackTrace();
-            } finally {
-                typedArray.recycle();
-            }
-        } else {
-            angle = 18;
-            gravity = Gravity.LEFT;
-            scaleType = ScaleType.CENTRE_CROP;
+
+    private void init(Context context, AttributeSet attributeSet, int defStyleAttr) {
+        if (attributeSet != null) {
+            TypedArray array = context.obtainStyledAttributes(attributeSet, R.styleable.DiagonalView, defStyleAttr, 0);
+            angle = array.getInt(R.styleable.DiagonalView_angle, angle);
+            gravity = GRAVITIES[array.getInt(R.styleable.DiagonalView_gravity, 3)];
+            tintColor = array.getColor(R.styleable.DiagonalView_tint, Color.TRANSPARENT);
+            fillColor = array.getColor(R.styleable.DiagonalView_fillColor, Color.TRANSPARENT);
+            solidColor = array.getColor(R.styleable.DiagonalView_solidColor, Color.TRANSPARENT);
+            direction = DIRECTIONS[array.getInt(R.styleable.DiagonalView_diagonalDirection, 0)];
+            array.recycle();
         }
-        path = new Path();
-        viewBounds = new RectF();
-        paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        paint.setAntiAlias(true);
-        scaleRect = new RectF();
-        this.context = context;
-        if (imageSource != -1)
-            try {
-                bitmap = BitmapFactory.decodeResource(context.getResources(), imageSource);
-            } catch (OutOfMemoryError error) {
-                bitmap = null;
-                Log.e(LOG_TAG, "Image is too large to process. " + error.getMessage());
-            } catch (Exception e) {
-                Log.e(LOG_TAG, e.getMessage());
-            }
-        if (colorTint != 0) {
-            if (Color.alpha(colorTint) == 255)
-                colorTint = Color.argb(55, Color.red(colorTint), Color.green(colorTint), Color.blue(colorTint));
-            paint.setColor(colorTint);
-        }
-        if (solidColor != 0) {
-            solidColor = Color.rgb(Color.red(solidColor), Color.green(solidColor), Color.blue(solidColor));
-        }
+        fillPaint.setStyle(Paint.Style.FILL);
+        fillPaint.setColor(fillColor);
+        tintPaint.setStyle(Paint.Style.FILL);
+        tintPaint.setColor(tintColor);
+        solidPaint.setStyle(Paint.Style.FILL);
+        solidPaint.setColor(solidColor);
+        solidPaint.setAlpha(0);
+        if (tintPaint.getAlpha() == 255)
+            tintPaint.setAlpha(DEFAULT_ALPHA);
     }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        initializeBitmap();
+    }
+
+    @Override
+    public void draw(Canvas canvas) {
+        Path path = PathHelper.getPathFor(getWidth(), getHeight(), angle, direction, gravity);
+        if (bitmap != null) {
+            if (fillColor != Color.TRANSPARENT)
+                canvas.drawPath(path, fillPaint);
+            canvas.drawPath(path, bitmapPaint);
+            if (tintColor != Color.TRANSPARENT)
+                canvas.drawPath(path, tintPaint);
+        }
+        if (solidColor != Color.TRANSPARENT)
+            canvas.drawPath(path, solidPaint);
+    }
+
+    private void initializeBitmap() {
         width = getMeasuredWidth();
         height = getMeasuredHeight();
-        if (bitmap != null && scaleType == ScaleType.CENTRE_CROP) {
-            float ratioChange = 1;
+        Drawable drawable = getDrawable();
+        if (drawable != null) {
+            if (drawable instanceof BitmapDrawable)
+                bitmap = ((BitmapDrawable) drawable).getBitmap();
+            else {
+                try {
+                    int COLOR_DRAWABLE_DIMENSIONS = 2;
+                    if (drawable instanceof ColorDrawable)
+                        bitmap = Bitmap.createBitmap(COLOR_DRAWABLE_DIMENSIONS, COLOR_DRAWABLE_DIMENSIONS, BITMAP_CONFIG);
+                    else
+                        bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), BITMAP_CONFIG);
+
+                    Canvas canvas = new Canvas(bitmap);
+                    drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+                    drawable.draw(canvas);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            if (bitmap == null) {
+                invalidate();
+                return;
+            }
+            if (bitmapPaint != null) {
+                bitmapShader = new BitmapShader(bitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
+                bitmapPaint.setShader(bitmapShader);
+            }
+            if (this.getScaleType() != ScaleType.CENTER_CROP && this.getScaleType() != ScaleType.FIT_XY)
+                this.setScaleType(ScaleType.CENTER_CROP);
+            setUpScaleType();
+            applyColorFilter();
+            invalidate();
+        }
+    }
+
+    private void applyColorFilter() {
+        if (bitmapPaint != null) {
+            bitmapPaint.setColorFilter(colorFilter);
+        }
+    }
+
+    private void setUpScaleType() {
+        float scaleX = 1, scaleY = 1, dx = 0, dy = 0;
+        if (bitmap == null || shaderMatrix == null)
+            return;
+        shaderMatrix.set(null);
+        if (getScaleType() == ScaleType.CENTER_CROP) {
             if (width != bitmap.getWidth()) {
-                ratioChange = width / bitmap.getWidth();
+                scaleX = width / bitmap.getWidth();
             }
-            if (ratioChange * bitmap.getHeight() < height) {
-                ratioChange = height / bitmap.getHeight();
+            if (scaleX * bitmap.getHeight() < height) {
+                scaleX = height / bitmap.getHeight();
             }
-            requiredHeight = bitmap.getHeight() * ratioChange;
-            requiredWidth = bitmap.getWidth() * ratioChange;
-            y = (int) ((requiredHeight / 2) - (height / 2));
-            x = (int) ((requiredWidth / 2) - (width / 2));
-            if (x > 0) x = -x;
-            if (y > 0) y = -y;
+            dy = (height - bitmap.getHeight() * scaleX) * 0.5f;
+            dx = (width - bitmap.getWidth() * scaleX) * 0.5f;
+            shaderMatrix.setScale(scaleX, scaleX);
+        } else {
+            scaleX = width / bitmap.getWidth();
+            scaleY = height / bitmap.getHeight();
+            dy = (height - bitmap.getHeight() * scaleY) * 0.5f;
+            dx = (width - bitmap.getWidth() * scaleX) * 0.5f;
+            shaderMatrix.setScale(scaleX, scaleY);
+        }
+        shaderMatrix.postTranslate(dx + 0.5f, dy + 0.5f);
+        bitmapShader.setLocalMatrix(shaderMatrix);
+    }
+
+    @Override
+    public void setColorFilter(ColorFilter colorFilter) {
+        if (colorFilter == this.colorFilter) {
+            return;
+        }
+        this.colorFilter = colorFilter;
+        applyColorFilter();
+        invalidate();
+    }
+
+    @Override
+    public ColorFilter getColorFilter() {
+        return colorFilter;
+    }
+
+    @Override
+    public void setScaleType(ScaleType scaleType) {
+        if (scaleType == ScaleType.CENTER_CROP || scaleType == ScaleType.FIT_XY)
+            super.setScaleType(scaleType);
+        else
+            throw new IllegalArgumentException(String.format("ScaleType %s not supported.", scaleType));
+    }
+
+    @Override
+    public void setAdjustViewBounds(boolean adjustViewBounds) {
+        if (adjustViewBounds) {
+            throw new IllegalArgumentException("adjustViewBounds not supported.");
         }
     }
 
     @Override
-    protected void onDraw(final Canvas canvas) {
-        super.onDraw(canvas);
-        float dxHeight = (float) (width * Math.tan(Math.toRadians(angle)));
-        path.moveTo(0, 0);
-        path.lineTo(width, 0);
-        if (gravity == Gravity.LEFT) {
-            path.lineTo(width, height - dxHeight);
-            path.lineTo(0, height);
-        } else {
-            path.lineTo(width, height);
-            path.lineTo(0, height - dxHeight);
-        }
-        path.close();
-        viewBounds.set(0, 0, width, height);
-        canvas.clipPath(path);
-        canvas.clipRect(viewBounds);
-        if (solidColor != 0) {
-            paint.setColor(solidColor);
-            canvas.drawRect(viewBounds, paint);
-        }
-        if (bitmap != null)
-            if (scaleType == ScaleType.CENTRE_CROP) {
-                scaleRect.set(x, y, x + requiredWidth, y + requiredHeight);
-                canvas.clipRect(scaleRect);
-                canvas.drawBitmap(bitmap, null, scaleRect, paint);
-            } else {
-                canvas.drawBitmap(bitmap, null, viewBounds, paint);
-            }
-        if (colorTint != 0)
-            canvas.drawRect(viewBounds, paint);
-        // Log.d("LOG", "Drawing Canvas");
+    public void setImageResource(int resId) {
+        super.setImageResource(resId);
+        initializeBitmap();
     }
 
-    /**
-     * @param scaleType scaleType of the image on {@link DiagonalView}
-     */
-    public void setScaleType(@NonNull ScaleType scaleType) {
-        this.scaleType = scaleType;
+    @Override
+    public void setImageURI(Uri uri) {
+        super.setImageURI(uri);
+        initializeBitmap();
+    }
+
+    @Override
+    public void setImageDrawable(Drawable drawable) {
+        super.setImageDrawable(drawable);
+        initializeBitmap();
+    }
+
+    @Override
+    public void setImageBitmap(Bitmap bm) {
+        super.setImageBitmap(bm);
+        initializeBitmap();
+    }
+
+    public int getTintColor() {
+        return tintColor;
+    }
+
+    public void setTintColor(int tintColor) {
+        DiagonalView.tintColor = tintColor;
+        tintPaint.setColor(tintColor);
+        if (tintPaint.getAlpha() == 255)
+            tintPaint.setAlpha(DEFAULT_ALPHA);
         invalidate();
     }
 
-    /**
-     * @param gravity is RIGHT or LEFT.
-     *                if diagonalGravity is LEFT then diagonal will start from left
-     *                and start increasing to RIGHT and reverse if gravity is RIGHT
-     */
-    public void setGravity(@NonNull Gravity gravity) {
+    public int getFillColor() {
+        return fillColor;
+    }
+
+    public void setFillColor(int fillColor) {
+        DiagonalView.fillColor = fillColor;
+        fillPaint.setColor(fillColor);
+        invalidate();
+    }
+
+    public int getSolidColor() {
+        return solidColor;
+    }
+
+    public void setSolidColor(int solidColor) {
+        DiagonalView.solidColor = solidColor;
+        solidPaint.setColor(solidColor);
+        solidPaint.setAlpha(0);
+        invalidate();
+    }
+
+    public void setDiagonalGravity(Gravity gravity) {
         this.gravity = gravity;
         invalidate();
     }
 
-
-    /**
-     * @param bitmap is object of Scaled Bitmap
-     */
-    public void setBitmap(@NonNull Bitmap bitmap) {
-        this.bitmap = bitmap;
+    public void setDiagonalDirection(Direction direction) {
+        this.direction = direction;
         invalidate();
     }
 
-    /**
-     * @param resId is drawable resource Id of image
-     */
-    public void setImageSource(@DrawableRes int resId) {
-        this.imageSource = resId;
-        try {
-            bitmap = BitmapFactory.decodeResource(context.getResources(), imageSource);
-        } catch (OutOfMemoryError error) {
-            bitmap = null;
-            Log.e(LOG_TAG, "Image is too large to process. " + error.getMessage());
-        } catch (Exception e) {
-            Log.e(LOG_TAG, e.getMessage());
-        }
-        invalidate();
-    }
-
-    /**
-     * @param color is image tint to provide theme effect. This is optional.
-     */
-    public void setColorTint(@ColorInt int color) {
-        if (color != 0 && Color.alpha(color) == 255) {
-            colorTint = Color.argb(55, Color.red(color), Color.green(color), Color.blue(color));
-            paint.setColor(colorTint);
-        }
-        invalidate();
-    }
-
-
-    /**
-     * @param angle is the angle at which the diagonal
-     *              is to be made
-     */
-    public void setAngle(float angle) {
+    public void setAngle(int angle) {
         this.angle = angle;
         invalidate();
     }
 
-    /**
-     * To make diagonal of solid color, alpha of color will automatically removed
-     *
-     * @param color is solid color
-     */
-    public void setSolidColor(int color) {
-        if (color != 0) {
-            solidColor = Color.rgb(Color.red(color), Color.green(color), Color.blue(color));
-        }
+    public void setBitmap(Bitmap bitmap) {
+        this.bitmap = bitmap;
         invalidate();
     }
 }

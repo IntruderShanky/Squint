@@ -12,10 +12,13 @@
         android:id="@+id/diagonal"
         android:layout_width="match_parent"
         android:layout_height="350dp"
-        squint:angle="13"
-        squint:gravity="left"
-        squint:scaleType="centerCrop"
-        squint:src="@drawable/barney_squint" />
+        android:padding="10dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/barney"
+        squint:angle="12"
+        squint:diagonalDirection="left_to_right"
+        squint:gravity="right"
+        squint:solidColor="#000" />
 
     <TextView
         android:id="@+id/name"
@@ -47,12 +50,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/diagonal"
-        android:padding="16dp"
-        android:textSize="16sp"
         android:fontFamily="sans-serif-smallcaps"
-        android:textColor="#828282"
         android:gravity="center"
-        android:text="Harris was born in Albuquerque, New Mexico and grew up Ruidoso, New Mexico, with his elder brother and their parents, Sheila Gai and Ronald Gene Harris. His parents were lawyers and also ran a restaurant. He attended La Cueva High School in Albuquerque, graduating with high honors in 1991."/>
-
-
+        android:padding="16dp"
+        android:text="Harris was born in Albuquerque, New Mexico and grew up Ruidoso, New Mexico, with his elder brother and their parents, Sheila Gai and Ronald Gene Harris. His parents were lawyers and also ran a restaurant. He attended La Cueva High School in Albuquerque, graduating with high honors in 1991."
+        android:textColor="#828282"
+        android:textSize="16sp" />
 </RelativeLayout>

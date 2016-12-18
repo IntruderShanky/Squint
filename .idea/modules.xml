@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/DiagonalView.iml" filepath="$PROJECT_DIR$/DiagonalView.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Squint.iml" filepath="$PROJECT_DIR$/Squint.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/squint/squint.iml" filepath="$PROJECT_DIR$/squint/squint.iml" />
     </modules>
