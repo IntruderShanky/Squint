@@ -13,12 +13,11 @@
         android:layout_width="match_parent"
         android:layout_height="350dp"
         android:padding="10dp"
-        android:scaleType="fitXY"
+        android:scaleType="centerCrop"
         android:src="@drawable/barney"
         squint:angle="12"
         squint:diagonalDirection="left_to_right"
-        squint:gravity="right"
-        squint:solidColor="#000" />
+        squint:gravity="right" />
 
     <TextView
         android:id="@+id/name"

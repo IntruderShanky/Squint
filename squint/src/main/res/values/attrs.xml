@@ -24,15 +24,6 @@
     <attr name="solidColor" format="color" />
     <attr name="fillColor" format="color" />
 
-    <declare-styleable name="SquintView">
-        <attr name="src" />
-        <attr name="angle" />
-        <attr name="scaleType" />
-        <attr name="gravity" />
-        <attr name="tint" />
-        <attr name="solidColor" />
-    </declare-styleable>
-
     <declare-styleable name="DiagonalView">
         <attr name="angle" />
         <attr name="gravity" />

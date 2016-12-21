@@ -80,7 +80,7 @@ public class DiagonalView extends ImageView {
         tintPaint.setColor(tintColor);
         solidPaint.setStyle(Paint.Style.FILL);
         solidPaint.setColor(solidColor);
-        solidPaint.setAlpha(0);
+        solidPaint.setAlpha(255);
         if (tintPaint.getAlpha() == 255)
             tintPaint.setAlpha(DEFAULT_ALPHA);
     }
@@ -258,7 +258,7 @@ public class DiagonalView extends ImageView {
     public void setSolidColor(int solidColor) {
         DiagonalView.solidColor = solidColor;
         solidPaint.setColor(solidColor);
-        solidPaint.setAlpha(0);
+        solidPaint.setAlpha(255);
         invalidate();
     }
 
