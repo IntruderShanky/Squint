@@ -8,7 +8,12 @@ Provide Diagonal cut on view with awesome customization #DiagonalView
 <a href='https://play.google.com/store/apps/details?id=com.intrusoft.islibrarydemo&utm_source=global_co&utm_small=prtnr&utm_content=Mar2515&utm_campaign=PartBadge&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png' width="193" height="75"/></a>
 
 # Preview
-![Screenshot](Screenshot/screenshot.png)
+![Screenshot](Screenshot/barney_squint.png)
+
+* Provide Diagonal anywhere we want
+* Provide Tint filter on image
+* Provide Solid color shape
+* Fully Customizable
 
 # Usage
 Step 1. Add the JitPack repository to your build file
@@ -23,21 +28,24 @@ allprojects {
 Step 2. Add the dependency
 ```groovy
 dependencies {
-  compile 'com.github.IntruderShanky:Squint:2.1.0'
+  compile 'com.github.IntruderShanky:Squint:3.0.1'
  }
  ```
+ 
+ ![Screenshot](Screenshot/list_squint.png)
+ 
 # Implementation
 ###XML Implementation:
 ```xml
- <com.intrusoft.squint.DiagonalView
-        android:id="@+id/diagonal"
-        android:layout_width="match_parent"
-        android:layout_height="350dp"
-        squint:angle="15"
-        squint:gravity="left"
-        squint:scaleType="centerCrop"
-        squint:solidColor="@color/solid_color"
-        squint:src="@drawable/barney_cover" />
+   <com.intrusoft.squint.DiagonalView
+                android:id="@+id/diagonal"
+                android:layout_width="match_parent"
+                android:layout_height="240dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/c1"
+                squint:diagonalDirection="bottom_to_top"
+                squint:angle="12"
+                squint:gravity="right" />
 ```
 ###Attributes
 ####Diagonal Angle
@@ -48,15 +56,15 @@ dependencies {
 ```xml
 squint:gravity="left"
 squint:gravity="right"
+squint:gravity="top"
+squint:gravity="bottom"
 ```
-####Image ScaleType
+####Diagonal Direction
 ```xml
-squint:scaleType="centerCrop"
-squint:scaleType="fitXY"
-```
-####Image Drawable Resource
-```xml
-squint:src="@drawable/your_image"
+squint:diagonalDirection="left_to_right"
+squint:diagonalDirection="top_to_bottom"
+squint:diagonalDirection="right_to_left"
+squint:diagonalDirection="bottom_to_top"
 ```
 ####Background Tint Color (Color Shold have some alpha value, default value 55)
 ```xml
@@ -66,6 +74,7 @@ squint:tint="@color/your_color"
 ```xml
 squint:solidColor="@color/your_color"
 ```
+
 ###Java Implementation:
 ```java
 DiagonalView diagonalView = (DiagonalView) findViewById(R.id.diagonal);
