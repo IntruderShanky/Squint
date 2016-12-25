@@ -10,27 +10,31 @@ import static com.intrusoft.squint.Squint.Gravity.LEFT;
 import static com.intrusoft.squint.Squint.Gravity.RIGHT;
 import static com.intrusoft.squint.Squint.Gravity.TOP;
 
-public class PathHelper {
+final class PathHelper {
+    private PathHelper() {
+        // no instances
+    }
 
-    public static Path getPathFor(float width, float height, double angle, Direction direction, Gravity gravity) {
+    static void calculatePath(Path path, float width, float height, double angle, Direction direction, Gravity gravity) {
+        path.reset();
         switch (direction) {
             case LEFT_TO_RIGHT:
-                return leftToRight(width, height, angle, gravity);
+                leftToRight(path, width, height, angle, gravity);
             case RIGHT_TO_LEFT:
-                return rightToLeft(width, height, angle, gravity);
+                rightToLeft(path, width, height, angle, gravity);
             case TOP_TO_BOTTOM:
-                return topToBottom(width, height, angle, gravity);
+                topToBottom(path, width, height, angle, gravity);
             case BOTTOM_TO_TOP:
-                return bottomToTop(width, height, angle, gravity);
+                bottomToTop(path, width, height, angle, gravity);
+            default:
+                throw new IllegalArgumentException("Unexpected direction: " + direction);
         }
-        return null;
     }
 
 
-    private static Path leftToRight(float width, float height, double angle, Gravity gravity) {
+    private static void leftToRight(Path path, float width, float height, double angle, Gravity gravity) {
         if (gravity == LEFT || gravity == RIGHT)
             gravity = BOTTOM;
-        Path path = new Path();
         float attitude = (float) Math.abs(Math.tan(Math.toRadians(angle)) * width);
         if (gravity == BOTTOM) {
             path.moveTo(0, 0);
@@ -45,13 +49,11 @@ public class PathHelper {
             path.lineTo(0, height);
             path.close();
         }
-        return path;
     }
 
-    private static Path rightToLeft(float width, float height, double angle, Gravity gravity) {
+    private static void rightToLeft(Path path, float width, float height, double angle, Gravity gravity) {
         if (gravity == LEFT || gravity == RIGHT)
             gravity = BOTTOM;
-        Path path = new Path();
         float attitude = (float) Math.abs(Math.tan(Math.toRadians(angle)) * width);
         if (gravity == BOTTOM) {
             path.moveTo(0, 0);
@@ -66,14 +68,12 @@ public class PathHelper {
             path.lineTo(0, height);
             path.close();
         }
-        return path;
     }
 
-    private static Path topToBottom(float width, float height, double angle, Gravity gravity) {
+    private static void topToBottom(Path path, float width, float height, double angle, Gravity gravity) {
         if (gravity == TOP || gravity == BOTTOM)
             gravity = LEFT;
         float attitude = (float) Math.abs(Math.tan(Math.toRadians(angle)) * height);
-        Path path = new Path();
         if (gravity == LEFT) {
             path.moveTo(0, 0);
             path.lineTo(0, height);
@@ -87,15 +87,13 @@ public class PathHelper {
             path.lineTo(width, 0);
             path.close();
         }
-        return path;
     }
 
-    private static Path bottomToTop(float width, float height, double angle, Gravity gravity) {
+    private static void bottomToTop(Path path, float width, float height, double angle, Gravity gravity) {
         if (gravity == TOP || gravity == BOTTOM)
             gravity = LEFT;
 
         float attitude = (float) Math.abs(Math.tan(Math.toRadians(angle)) * height);
-        Path path = new Path();
         if (gravity == LEFT) {
             path.moveTo(0, 0);
             path.lineTo(0, height);
@@ -109,6 +107,5 @@ public class PathHelper {
             path.lineTo(0, height);
             path.close();
         }
-        return path;
     }
 }
