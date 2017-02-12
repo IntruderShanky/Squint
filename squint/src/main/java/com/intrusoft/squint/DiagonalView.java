@@ -45,6 +45,7 @@ public class DiagonalView extends ImageView {
     private Bitmap bitmap;
     private BitmapShader bitmapShader;
     private ColorFilter colorFilter;
+    private Path path = new Path();
 
 
     public DiagonalView(Context context) {
@@ -89,11 +90,12 @@ public class DiagonalView extends ImageView {
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         initializeBitmap();
+
+        PathHelper.calculatePath(path, getWidth(), getHeight(), angle, direction, gravity);
     }
 
     @Override
     public void draw(Canvas canvas) {
-        Path path = PathHelper.getPathFor(getWidth(), getHeight(), angle, direction, gravity);
         if (bitmap != null) {
             if (fillColor != Color.TRANSPARENT)
                 canvas.drawPath(path, fillPaint);
